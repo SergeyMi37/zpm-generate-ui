@@ -4,7 +4,8 @@
  
 [![Docker-ports](https://img.shields.io/badge/dynamic/yaml?color=blue&label=docker-compose&prefix=ports%20-%20&query=%24.services.iris.ports&url=https%3A%2F%2Fraw.githubusercontent.com%2Fsergeymi37%2Fexchange-rate-cbrf-ui%2Fmaster%2Fdocker-compose.yml)](https://raw.githubusercontent.com/sergeymi37/exchange-rate-cbrf-ui/master/docker-compose.yml)
  
-## exchange-rate-cbrf-ui
+## zpm-generate-ui
+
  [![OEX](https://img.shields.io/badge/Available%20on-Intersystems%20Open%20Exchange-00b2a9.svg)](https://openexchange.intersystems.com/package/exchange-rate-cbrf-ui)
  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/SergeyMi37/exchange-rate-cbrf-ui">
 
@@ -51,6 +52,6 @@ $ docker-compose up -d
 ```
 
 ## How to Test it
-Open link: http://localhost:52663/apptoolsrest/a/rate&class=appmsw.cbrf.rateinfo&namespace=USER
+Open link: http://localhost:52663/apptoolsrest/a/info
 
 ![Link](https://raw.githubusercontent.com/sergeymi37/exchange-rate-cbrf-ui/master/doc/Screenshot_51.png)
