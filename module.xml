@@ -14,15 +14,10 @@
 	</Author>
 	<SystemRequirements Version=">=2020.1" Interoperability="enabled" />
 	<SourcesRoot>src</SourcesRoot>
-	<Invoke Class="appmsw.cbrf.util" Method="init" Phase="Activate" When="After"/>
-	<Dependencies>
+<Dependencies>
 	<ModuleReference>
     	<Name>apptools-admin</Name>
     	<Version>1.1.*</Version>
-        </ModuleReference>
-	<ModuleReference>
-    	<Name>zapm</Name>
-    	<Version>1.0.*</Version>
         </ModuleReference>
     </Dependencies>
     <Invokes>

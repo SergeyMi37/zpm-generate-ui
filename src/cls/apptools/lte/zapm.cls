@@ -376,9 +376,27 @@ ClassMethod PrivateRepo(serverClassList = "", ByRef repo) As %Status
     Quit yes
 }
 
-ClassMethod init(ByRef h, ByRef par) As %Status
+/// do ##class(apptools.lte.zapm).init()
+ClassMethod init(installall = 0) As %Status
 {
+ set curna=$namespace
+ new $namespace
+ set $namespace="%SYS"
+	if '..IsInstallzpm("zapm") {
+		do ##class(%ZPM.PackageManager).Shell("install zapm")
+	}
+ set $namespace=curna
+	write !,"Load for demo "_##class(apptools.core.net).GetURI(.prop)_"/apptoolsrest/a/zapm"
+	quit:installall="note" $$$OK
 	quit $$$OK
+}
+
+/// write ##class(appmsw.python.util).IsInstallzpm("exchange-rate-cbrf")
+ClassMethod IsInstallzpm(modulename, ns = {$namespace}) As %String
+{
+	do ##class(%ZPM.PackageManager).GetListModule(ns,.list)
+	;zw list
+	quit $DATA(list(modulename))
 }
 
 /// set xml = ##class(apptools.core.rest).getStatic("apptools.lte.zapm:module")
