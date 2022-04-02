@@ -25,12 +25,10 @@
     	    <Version>1.0.*</Version>
         </ModuleReference>
     </Dependencies>
-	<CSPApplication CookiePath="/cbrf-rate/" DispatchClass="appmsw.cbrf.rest" MatchRoles=":{$dbrole}" PasswordAuthEnabled="1" Recurse="1" UnauthenticatedEnabled="0" Url="/cbrf-rate" UseSessionCookie="1"/>
-	<Invokes>
-     <Invoke Class="apptools.lte.resources" Method="init"></Invoke>
+    <Invokes>
+     <Invoke Class="apptools.lte.zapm" Method="init"></Invoke>
     </Invokes>
-	<Resource Name="apptools.lte.info.CLS"/>
-	<Resource Name="apptools.lte.resources.CLS"/>
+	<Resource Name="apptools.lte.zapm.CLS"/>
     </Module>
   </Document>
 </Export>

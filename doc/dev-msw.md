@@ -3,6 +3,9 @@
 ## docker ---------------------------------------------------
 ### stoped and clean all containers
 docker stop $(docker ps -a -q) &&  docker rm $(docker ps -a -q) && docker system prune -f
+### remove all images
+docker rmi $(docker images -q)
+docker rmi $(docker images -a -q)
 
 ### clean up docker 
 ```
