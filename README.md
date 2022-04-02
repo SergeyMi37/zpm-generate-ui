@@ -3,13 +3,13 @@
 ![OEX-zapm](https://img.shields.io/badge/dynamic/json?url=https:%2F%2Fpm.community.intersystems.com%2Fpackages%2Fzpm-generate-ui%2F&label=ZPM-pm.community.intersystems.com&query=$.version&color=green&prefix=zpm-generate-ui)
  
 [![Docker-ports](https://img.shields.io/badge/dynamic/yaml?color=blue&label=docker-compose&prefix=ports%20-%20&query=%24.services.iris.ports&url=https%3A%2F%2Fraw.githubusercontent.com%2Fsergeymi37%2Fzpm-generate-ui%2Fmaster%2Fdocker-compose.yml)](https://raw.githubusercontent.com/sergeymi37/zpm-generate-ui/master/docker-compose.yml)
+
+![Link](https://raw.githubusercontent.com/sergeymi37/zpm-generate-ui/master/doc/icon-z.png)
  
 ## zpm-generate-ui
 
  [![OEX](https://img.shields.io/badge/Available%20on-Intersystems%20Open%20Exchange-00b2a9.svg)](https://openexchange.intersystems.com/package/zpm-generate-ui)
  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/SergeyMi37/zpm-generate-ui">
-
-![Link](https://raw.githubusercontent.com/sergeymi37/zpm-generate-ui/master/doc/icon-z.png)
 
  UI for basic zpm commands. From module generation, install, uninstall to publishing in the private registry.
  
