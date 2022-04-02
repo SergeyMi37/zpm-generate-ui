@@ -9,7 +9,9 @@
  [![OEX](https://img.shields.io/badge/Available%20on-Intersystems%20Open%20Exchange-00b2a9.svg)](https://openexchange.intersystems.com/package/zpm-generate-ui)
  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/SergeyMi37/zpm-generate-ui">
 
-UI for basic zpm commands. From module generation, install, uninstall to publishing in the private registry.
+![Link](https://raw.githubusercontent.com/sergeymi37/zpm-generate-ui/master/doc/icon-z.png)
+
+ UI for basic zpm commands. From module generation, install, uninstall to publishing in the private registry.
  
 ## Installation with ZPM
 
