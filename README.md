@@ -11,8 +11,8 @@
  [![Demo](https://img.shields.io/badge/Demo%20on-GCR-black)](https://zpm-ui.demo.community.intersystems.com/apptoolsrest/a/rate&class=appmsw.python.demo)
  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/SergeyMi37/zpm-generate-ui">
 
- The project provides a user interface for selecting classes, packages, globals, and web applications and generating a package zpm.
- UI for basic zpm commands. From module generation, load, install, uninstall to publishing in the registry.
+ User interface for selecting IRIS resources and creating a zpm package.
+ UI for basic commands from module generation, loading, installation, uninstallation to publishing to the registry.
  
 ## Installation with ZPM
 
