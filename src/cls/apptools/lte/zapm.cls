@@ -296,7 +296,7 @@ ClassMethod OptionsFirstHead(Par = "") As %Status
 	if $D(@..#GNStore@("Switch"),data) set switch=data
 	write "<br><br>Switch to the private registry:<br>"
 	write $$$appText(divId_"Switch"," size=80 ",switch)
-	write $$$appButton(divId_"appButtonSwitch","onclick="""_$tr(onclick,"*",3)_"""","Switch")
+	write $$$appButton(divId_"appButtonSwitch","disabled onclick="""_$tr(onclick,"*",3)_"""","Switch")
 
 	write "<br><br><br>Viewing and editing global for storing package prototypes:<br>"
 	;write $$$appText(divId_"Switch"," size=80 ",switch)
