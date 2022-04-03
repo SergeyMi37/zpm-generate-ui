@@ -137,7 +137,7 @@ ClassMethod NSpaceFirstHead(Par = "") As %Status
 	if lastmask="" set lastmask="*"
 	if '##class(apptools.lte.zapm).PrivateRepo(,.currepo) set disabled="disabled"
 	write $$$appButton(divId_"appButtonResult1"_ns,"title='Create new Packet' onclick="""_$replace(onclick,"*","new&ns="_ns_"&zpmname="_zpmname)_"""","Generate")
-	write $$$appButton(divId_"appButtonResult4"_ns,"title='Load zpm into current namespace' onclick="""_$replace(onclick,"*","load&ns="_ns_"&zpmname="_zpmname)_"""","Load")
+	;write $$$appButton(divId_"appButtonResult4"_ns,"title='Load zpm into current namespace' onclick="""_$replace(onclick,"*","load&ns="_ns_"&zpmname="_zpmname)_"""","Load")
 	write $$$appButton(divId_"appButtonResult2"_ns,"title='Installing packages from found in the current registry "_$g(currepo(0))_" ' onclick="""_$replace(onclick,"*","install&ns="_ns_"&zpmname="_zpmname)_"""","Search")
 	write $$$appText(divId_"FindMask"," title='Search context in registry' size=8 ",lastmask)_"  "
 	do ##class(apptools.core.sys).SetTableHeader(gn,"Name","Version","Description","Action") ;,"Description")
@@ -171,8 +171,7 @@ ClassMethod NSpaceFirstHead(Par = "") As %Status
 		set vers=$g(@gnpro@(pk,"Application-module","Version"))
 		do ##class(apptools.core.sys).SetTableRow(gn,i,editbutton,$replace(gstar,"*",vers),$replace(gstar,"*",desc),deletebutton)
 	}
-	
-	do ##class(apptools.core.LogInfoPane).DrawSQL("result "_gn,10000,"","<br>Installed packets:",,,1)
+	do:$d(@gn@(1)) ##class(apptools.core.LogInfoPane).DrawSQL("result "_gn,10000,"","<br>Installed packets:",,,1)
 	$$$SetHeightContent(divId,0)
 	quit $$$OK
 }
@@ -292,11 +291,11 @@ ClassMethod OptionsFirstHead(Par = "") As %Status
 	write $$$appText(divId_"Reset"," size=80 ",reset)
 	write $$$appButton(divId_"appButtonRest","onclick="""_$tr(onclick,"*",2)_"""","Reset")
 
-	set switch=" repo -r -n registry -url http://iris-test:52773/registry/ -user ""_system"" -pass ""SYS"""
+	set switch="repo -r -n registry -url https://zpm-ui.demo.community.intersystems.com/registry/ -user ""_system"" -pass ""SYS"""
 	if $D(@..#GNStore@("Switch"),data) set switch=data
 	write "<br><br>Switch to the private registry:<br>"
 	write $$$appText(divId_"Switch"," size=80 ",switch)
-	write $$$appButton(divId_"appButtonSwitch","disabled onclick="""_$tr(onclick,"*",3)_"""","Switch")
+	write $$$appButton(divId_"appButtonSwitch"," onclick="""_$tr(onclick,"*",3)_"""","Switch")
 
 	write "<br><br><br>Viewing and editing global for storing package prototypes:<br>"
 	;write $$$appText(divId_"Switch"," size=80 ",switch)
@@ -400,6 +399,9 @@ ClassMethod init(installall = 0) As %Status
 		set outputpath="/usr/irissys/mgr/Temp/"
 		if ##class(%File).DirectoryExists(dir) {
 		 if '##class(%File).DirectoryExists(dir2) {	;for demo  GCR -------------------
+			set switch="repo -r -n registry -url https://zpm-ui.demo.community.intersystems.com/registry/ -user ""_system"" -pass ""SYS"""
+			set @..#GNStore@("Switch")=switch
+
 			 for i="zpm-registry","zpmshow" {
 			 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
 			 }
