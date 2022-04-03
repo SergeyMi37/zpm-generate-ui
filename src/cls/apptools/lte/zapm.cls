@@ -388,12 +388,50 @@ ClassMethod init(installall = 0) As %Status
  set $namespace=curna
  write !,"Load for demo "_##class(apptools.core.net).GetURI(.prop)_"/apptoolsrest/a/zapm"
  quit:installall="note" $$$OK
-  ;for demo
- try {
-	 for i="zpm-registry","fileserver","zpmshow" {
-	 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
-	 }
- } catch e {}
+ ;for demo
+ ;try { } catch e {}
+	set tMgrDir = $System.Util.ManagerDirectory()
+	set tBinDir = $System.Util.BinaryDirectory()
+	set tCSPDir = ##class(%File).NormalizeDirectory("csp", ##class(%File).GetDirectory($zu(86)))
+	if $zversion(1)=3 {  //Linux
+		set dir="/opt/irisapp/src/"
+		set dir2="/irisdev/" 
+		set pattpath="/opt/irisapp/src/csp/sql2xlsx/pattern/"
+		set outputpath="/usr/irissys/mgr/Temp/"
+		if ##class(%File).DirectoryExists(dir) {
+		 if '##class(%File).DirectoryExists(dir2) {	;for demo  GCR -------------------
+			 for i="zpm-registry","zpmshow" {
+			 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
+			 }
+		    do:'..IsInstallzpm("fileserver") ##class(%ZPM.PackageManager).Shell("load https://github.com/SergeyMi37/Cache-FileServer")
+		 }
+		 else {  ;install zpm modules for Docker -------------------------------
+			 for i="zpm-registry","zpmshow" {
+			 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
+			 }
+		    do:'..IsInstallzpm("fileserver") ##class(%ZPM.PackageManager).Shell("load https://github.com/SergeyMi37/Cache-FileServer")
+		 }
+		}
+		else {  //just linux without docker
+		}
+	    ;set options for linux
+		;if ##class(%File).DirectoryExists(pattpath)	{
+		;	set @gn@("pattpath")=pattpath
+		;}
+		;else {
+		;	set @gn@("pattpath")=tCSPDir_"sql2xlsx/pattern/"
+		;}
+		;if ##class(%File).DirectoryExists(outputpath)	{
+		;	set @gn@("outputpath")=outputpath
+		;}
+		;else {
+		;	set @gn@("outputpath")=$System.Util.ManagerDirectory()_"Temp/"
+		;}
+	}
+	else { ;set options for Windows
+		;set @gn@("pattpath")=tCSPDir_"sql2xlsx/pattern\"
+		;set @gn@("outputpath")=$System.Util.ManagerDirectory()_"Temp\"
+	}
 	quit $$$OK
 }
 
