@@ -142,6 +142,7 @@ ClassMethod UiSaveResources(Par = "") As %Status
 		write "<pre>"
 		set st=##class(%ZPM.PackageManager).Shell("package -p "_WorkDirPacket_" "_namezpm)
 		write "</pre>"
+		;do ##class(Fileserver.File).AddFile(WorkDirPacket)
 	}
 	write ##class(apptools.lte.zapm).ButtonAgain(divId,key,"Refresh","NSpace")	
 	Quit $$$OK

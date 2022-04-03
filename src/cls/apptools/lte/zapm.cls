@@ -49,6 +49,21 @@ ClassMethod GetAllApps(opt) As %Status
 		set opt(key,"TabMenu","Close")=1 ;0 = the tab cannot be deleted
 		set opt(key,"aw-icon")="fa-solid fa-asterisk" ;"fa-list-alt" ;fa-table"   https://fontawesome.com/icons?d=gallery&p=2&m=free
 		set opt(key,"Active")=1 ;active menu item
+	
+	    if ..IsInstallzpm("fileserver","USER") {
+		set key="File"
+		set opt(key,"Menu")=sideMenu
+		set opt(key)="Fileserver"
+		set opt(key,"id")=key
+		set opt(key,"TabName")="Fileserver"
+		set opt(key,"ClassName")=..%ClassName(1)
+		set opt(key,"Role")="%All"
+		;set opt(key,"MethodUrlNewWin")="/fileserver/files"
+		set opt(key,"Method")="ShowInIFrame" 
+		set opt(key,"InFrameUrl")="/fileserver/files"
+		set opt(key,"aw-icon")="fa-list-alt" ;fa-table"   https://fontawesome.com/icons?d=gallery&p=2&m=free
+		set opt(key,"Active")=0 ;active menu item
+     }	
 
 	set sideMenuName="PackagesManager",
 		sideMenuNumer=3,
@@ -401,7 +416,7 @@ ClassMethod init(installall = 0) As %Status
 		 if '##class(%File).DirectoryExists(dir2) {	;for demo  GCR -------------------
 			set switch="repo -r -n registry -url https://zpm-ui.demo.community.intersystems.com/registry/ -user ""_system"" -pass ""SYS"""
 			set @..#GNStore@("Switch")=switch
-
+			set @..#GNStore@("dir")=outputpath
 			 for i="zpm-registry","zpmshow" {
 			 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
 			 }
