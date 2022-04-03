@@ -187,7 +187,7 @@ ClassMethod ExportResources(WorkDirPacket, dir, flags = "00000", ByRef pro, ByRe
 	}
 	#dim FileStream As %FileCharacterStream = ##class(%FileCharacterStream).%New()
 	set filename=##class(%File).NormalizeFilename( "module.xml", WorkDirPacket )
-	;!!! for windows filename_1111111111111111_WorkDirPacket
+	
 	set FileStream.Filename=filename
 	set FileStream.TranslateTable="UTF8"
 	do FileStream.Write(modulexml)
@@ -257,7 +257,8 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 	write $$$appText(divId_"WorkDirPacket","size=50 title='The work directory for generate and load'",dir)
 
 	set gn="Resources"
-	do ##class(apptools.core.code).GetResources(ns,.Res) 
+	set flags=$s(ns="%SYS":"001",1:"")
+	do ##class(apptools.core.code).GetResources(ns,.Res,flags)
 	;add groups packets--------------
 	set name=""
 	for  { set name=$o(Res("cls",name),1,data) quit:name=""

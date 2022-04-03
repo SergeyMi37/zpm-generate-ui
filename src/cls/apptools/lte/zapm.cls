@@ -386,8 +386,14 @@ ClassMethod init(installall = 0) As %Status
 		do ##class(%ZPM.PackageManager).Shell("install zapm")
 	}
  set $namespace=curna
-	write !,"Load for demo "_##class(apptools.core.net).GetURI(.prop)_"/apptoolsrest/a/zapm"
-	quit:installall="note" $$$OK
+ write !,"Load for demo "_##class(apptools.core.net).GetURI(.prop)_"/apptoolsrest/a/zapm"
+ quit:installall="note" $$$OK
+  ;for demo
+ try {
+	 for i="zpm-registry","fileserver","zpmshow" {
+	 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
+	 }
+ } catch e {}
 	quit $$$OK
 }
 
