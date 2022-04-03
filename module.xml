@@ -3,7 +3,7 @@
   <Document name="zpm-generate-ui.ZPM">
     <Module>
     <Name>zpm-generate-ui</Name>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
 	<Description>UI for basic zpm commands. From module generation, install, load, uninstall to publishing in the private registry.</Description>
     <Packaging>module</Packaging>
 	<Keywords>zpm generate ui</Keywords>
@@ -24,6 +24,7 @@
      <Invoke Class="apptools.lte.zapm" Method="init"></Invoke>
     </Invokes>
 	<Resource Name="apptools.lte.zapm.CLS"/>
+	<Resource Name="apptools.lte.resources.CLS"/>
     </Module>
   </Document>
 </Export>

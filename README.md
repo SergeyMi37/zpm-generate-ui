@@ -8,7 +8,7 @@
 ## zpm-generate-ui
 
  [![OEX](https://img.shields.io/badge/Available%20on-Intersystems%20Open%20Exchange-00b2a9.svg)](https://openexchange.intersystems.com/package/zpm-generate-ui)
- [![Demo](https://img.shields.io/badge/Demo%20on-GCR-black)](https://zpm-ui.demo.community.intersystems.com/apptoolsrest/a/rate&class=appmsw.python.demo)
+ [![Demo](https://img.shields.io/badge/Demo%20on-GCR-black)](https://zpm-ui.demo.community.intersystems.com/apptoolsrest/a/zapm)
  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/SergeyMi37/zpm-generate-ui">
 
  User interface for selecting IRIS resources and creating a zpm package.
