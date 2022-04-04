@@ -151,7 +151,7 @@ ClassMethod NSpaceFirstHead(Par = "") As %Status
 	set lastmask=$g(@GN@("lastfindmask"),"*")
 	if lastmask="" set lastmask="*"
 	if '##class(apptools.lte.zapm).PrivateRepo(,.currepo) set disabled="disabled"
-	write $$$appButton(divId_"appButtonResult1"_ns,"title='Create new Packet' onclick="""_$replace(onclick,"*","new&ns="_ns_"&zpmname="_zpmname)_"""","Generate")
+	write $$$appButton(divId_"appButtonResult1"_ns,"title='Create new Packet' onclick="""_$replace(onclick,"*","new&ns="_ns_"&zpmname="_zpmname)_"""","Create")
 	;write $$$appButton(divId_"appButtonResult4"_ns,"title='Load zpm into current namespace' onclick="""_$replace(onclick,"*","load&ns="_ns_"&zpmname="_zpmname)_"""","Load")
 	write $$$appButton(divId_"appButtonResult2"_ns,"title='Installing packages from found in the current registry "_$g(currepo(0))_" ' onclick="""_$replace(onclick,"*","install&ns="_ns_"&zpmname="_zpmname)_"""","Search")
 	write $$$appText(divId_"FindMask"," title='Search context in registry' size=8 ",lastmask)_"  "
