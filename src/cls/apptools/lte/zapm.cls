@@ -243,7 +243,19 @@ ClassMethod NSpaceResult(Par = "") As %Status
 		write ..ButtonAgain(divId,key,"Refresh","NSpace","title='Update the current list of elements' ")
 	}
 	elseif mode="uninstall" {
-		set head="Uninstall packages '"_zpmname_"' from current namespace '"_ns_"'. Are you sure ?"
+		do ##class(apptools.lte.resources).GetResourcesFromZpm(zpmname,.Module,.reso)
+		set gn2="tmpRes"
+		do ##class(apptools.core.sys).SetTableHeader(gn2,"Name Resources","Type")
+		set typ="",i=0
+		for { set typ=$o(reso(typ)) quit:typ=""
+			set item=""
+			for { set item=$o(reso(typ,item)) quit:item=""
+				set i=i+1
+				do ##class(apptools.core.sys).SetTableRow(gn2,i,item,typ)
+			}
+		}
+		do:$d(@gn2@(1)) ##class(apptools.core.LogInfoPane).DrawSQL("result "_gn2,10000,"","<br>Resources to remove:",,,1)
+		set head="<br>Uninstall packages '"_zpmname_"' from current namespace '"_ns_"'. Are you sure ?"
 		write head_"<br>"
 		write $$$appButton(divId_"appButtonResult5"_zpmname,"title='Uninstall Packet' onclick="""_$replace(onclick,"*","yes&ns="_ns_"&zpmname="_zpmname)_"""","YES")
 		write $$$appButton(divId_"appButtonResult6"_zpmname,"title='Cancel' onclick="""_$replace(onclick,"*","no&ns="_ns_"&zpmname="_zpmname)_"""","NO")
@@ -312,6 +324,12 @@ ClassMethod OptionsFirstHead(Par = "") As %Status
 	write $$$appText(divId_"Switch"," size=80 ",switch)
 	write $$$appButton(divId_"appButtonSwitch"," onclick="""_$tr(onclick,"*",3)_"""","Switch")
 
+	set switch2="repo -n registry -r -url https://test.pm.community.intersystems.com/registry/ -user test -pass PassWord42"
+	if $D(@..#GNStore@("SwitchTest"),data) set switch2=data
+	write "<br><br>Switch to a public test registry:<br>"
+	write $$$appText(divId_"Switch2"," size=80 ",switch2)
+	write $$$appButton(divId_"appButtonSwitch2"," onclick="""_$tr(onclick,"*",4)_"""","Switch to Test")
+
 	write "<br><br><br>Viewing and editing global for storing package prototypes:<br>"
 	;write $$$appText(divId_"Switch"," size=80 ",switch)
 	s store=..#GNStore
@@ -333,6 +351,7 @@ ClassMethod OptionsResult(Par = "") As %Status
 	set dirrepo=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"WorkDirPacket")
 	set Reset=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"Reset")
 	set Switch=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"Switch")
+	set Switch2=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"Switch2")
 	write ..ButtonAgain(divId,key,"Refresh",,"title='Update the current list of elements' ")
 	set st=$$$OK
 	if mode=1 {
@@ -352,11 +371,22 @@ ClassMethod OptionsResult(Par = "") As %Status
 		else  write $$$appMsg("Done")
 	} 
 	elseif mode=3 {
-		if Switch="" w $$$appError($$$aText("work directory is empty","")) quit $$$OK
+		if Switch="" w $$$appError($$$aText("switch string is empty","")) quit $$$OK
 		set @..#GNStore@("Switch")=Switch
 		write $$$appMsg(Switch_" saved")
 		write "<pre>"
 		set st=##class(%ZAPM.ext.zapp).prompt(Switch)
+		;set st=##class(%ZPM.PackageManager).Shell(Switch)
+		write "</pre>"
+		if 'st write $$$appError($System.Status.GetErrorText(st))
+		else  write $$$appMsg("Done")
+	} 
+	elseif mode=4 {
+		if Switch2="" w $$$appError($$$aText("switch string is empty","")) quit $$$OK
+		set @..#GNStore@("SwitchTest")=Switch2
+		write $$$appMsg(Switch2_" saved")
+		write "<pre>"
+		set st=##class(%ZAPM.ext.zapp).prompt(Switch2)
 		;set st=##class(%ZPM.PackageManager).Shell(Switch)
 		write "</pre>"
 		if 'st write $$$appError($System.Status.GetErrorText(st))

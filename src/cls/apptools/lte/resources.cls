@@ -298,8 +298,7 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 	set gnpro=$na(@GN@("prototype",ns))
 	write $$$appInputHidden(divId_"ModeSet","",mode)
 	If mode="edit",##class(%ZPM.PackageManager.Developer.Module).NameExists(zpmname) { ;-------------------
-		Set Module = ##class(%ZPM.PackageManager.Developer.Module).NameOpen(zpmname,,.tSC)
-		If $$$ISERR(tSC) {	Quit $$$OK	}
+		if '..GetResourcesFromZpm(zpmname,.Module,.Res) quit $$$OK
 		do ##class(%ZAPM.ext.zpm).GetListModule(ns,.List,0)
 		set dirroot=$lg($G(List(zpmname,"L")),3)
 		do ##class(%ZAPM.ext.zpm).GetFileLines(dirroot_"module.xml",.o)
@@ -312,44 +311,7 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 		  	set xml=xml_o(i)_$c(13,10)
 		}
 		set Res(type,"06.XML")=##class(apptools.core.code).SetList(Res(type,"06.XML"), 7, xml)
-		set lo=Module.CalculatedResourcesGet()
-		set debug=0 ;
-		write:debug "CalculatedResourcesGet="_lo.Size
-		for i=1:1:lo.Size {
-			set obj=lo.Oref(i)
-			set name=obj.Name
-			w:debug "<br>----- res-name = "_name
-			set typ=$zconvert($p(name,".",*),"L")
-			set ProcessorClass=obj.ProcessorClass
-			if ProcessorClass="" {
-				set itemL=$p(name,".",1,*-1)_"."_typ
-				set itemU=$p(name,".",1,*-1)_"."_$zconvert($p(name,".",*),"U")
-				if $d(Res(typ,itemL)) {
-					set Res(typ,itemL)=##class(apptools.core.code).SetList(Res(typ,itemL), 7, 1)
-				}
-				elseif $d(Res(typ,itemU)) {
-					set Res(typ,itemU)=##class(apptools.core.code).SetList(Res(typ,itemU), 7, 1)
-				}
-				else {
-					set Res(typ,itemU)=##class(apptools.core.code).SetList("", 7, 1)
-				}
-			}
-			else {
-				if ProcessorClass="CSPApplication" {
-					set att=obj.Attributes
-					set key="",cprop=""
-					for { set key=att.Next(key) quit:key=""
-						w:debug "<br>"_key_"="_att.GetAt(key)
-						if key="DispatchClass" set cprop=att.GetAt(key)
-						if key="Url" set url=att.GetAt(key)
-					}
-					set Res(ProcessorClass,url)=##class(apptools.core.code).SetList("", 7, 1)
-					set Res(ProcessorClass,url)=##class(apptools.core.code).SetList(Res(ProcessorClass,url), 2, cprop)
-				}
-				else {	set Res(ProcessorClass,name)=##class(apptools.core.code).SetList("", 7, 1)
-				}
-			}
-		}
+		;do ..GetResourcesFromZpm
 
 	}
 	elseIf mode="editpro" { ;-------------------
@@ -408,6 +370,51 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 
 	write "</form>"
 	quit $$$OK
+}
+
+ClassMethod GetResourcesFromZpm(zpmname, ByRef Module, ByRef Res) As %Status
+{
+	Set Module = ##class(%ZPM.PackageManager.Developer.Module).NameOpen(zpmname,,.tSC)
+	If $$$ISERR(tSC) {	Quit tSC }
+	set lo=Module.CalculatedResourcesGet()
+	set debug=0 ;
+	write:debug "CalculatedResourcesGet="_lo.Size
+	for i=1:1:lo.Size {
+		set obj=lo.Oref(i)
+		set name=obj.Name
+		w:debug "<br>----- res-name = "_name
+		set typ=$zconvert($p(name,".",*),"L")
+		set ProcessorClass=obj.ProcessorClass
+		if ProcessorClass="" {
+			set itemL=$p(name,".",1,*-1)_"."_typ
+			set itemU=$p(name,".",1,*-1)_"."_$zconvert($p(name,".",*),"U")
+			if $d(Res(typ,itemL)) {
+				set Res(typ,itemL)=##class(apptools.core.code).SetList(Res(typ,itemL), 7, 1)
+			}
+			elseif $d(Res(typ,itemU)) {
+				set Res(typ,itemU)=##class(apptools.core.code).SetList(Res(typ,itemU), 7, 1)
+			}
+			else {
+				set Res(typ,itemU)=##class(apptools.core.code).SetList("", 7, 1)
+			}
+		}
+		else {
+			if ProcessorClass="CSPApplication" {
+				set att=obj.Attributes
+				set key="",cprop=""
+				for { set key=att.Next(key) quit:key=""
+					w:debug "<br>"_key_"="_att.GetAt(key)
+					if key="DispatchClass" set cprop=att.GetAt(key)
+					if key="Url" set url=att.GetAt(key)
+				}
+				set Res(ProcessorClass,url)=##class(apptools.core.code).SetList("", 7, 1)
+				set Res(ProcessorClass,url)=##class(apptools.core.code).SetList(Res(ProcessorClass,url), 2, cprop)
+			}
+			else {	set Res(ProcessorClass,name)=##class(apptools.core.code).SetList("", 7, 1)
+			}
+		}
+	}
+ 	quit $$$OK
 }
 
 /// Get ZPM Modules from Repo
