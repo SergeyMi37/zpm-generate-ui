@@ -13,6 +13,10 @@
 
  User interface for selecting IRIS resources and creating a zpm package.
  UI for basic commands from module generation, loading, installation, uninstallation to publishing to the registry.
+
+## What's new
+Added example [DEMO](https://zpm-ui.demo.community.intersystems.com/apptoolsrest/a/zapm)
+Articles added to DC [Article I](https://community.intersystems.com/post/project-zpm-generate-ui-generate-list-load) [Article II](https://community.intersystems.com/post/project-zpm-generate-ui-search-install-repository-uninstall-publish)
  
 ## Installation with ZPM
 
