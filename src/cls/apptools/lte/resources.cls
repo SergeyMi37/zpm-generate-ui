@@ -139,8 +139,10 @@ ClassMethod UiSaveResources(Par = "") As %Status
 		write "</pre>"
 	}
 	elseif mode="package" { //PACKAGE
+		set cmd="package -p "_WorkDirPacket_" "_namezpm
+		write cmd
 		write "<pre>"
-		set st=##class(%ZPM.PackageManager).Shell("package -p "_WorkDirPacket_" "_namezpm)
+		set st=##class(%ZPM.PackageManager).Shell(cmd)
 		write "</pre>"
 		;do ##class(Fileserver.File).AddFile(WorkDirPacket)
 	}
@@ -311,7 +313,6 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 		  	set xml=xml_o(i)_$c(13,10)
 		}
 		set Res(type,"06.XML")=##class(apptools.core.code).SetList(Res(type,"06.XML"), 7, xml)
-		;do ..GetResourcesFromZpm
 
 	}
 	elseIf mode="editpro" { ;-------------------
@@ -363,6 +364,10 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 				set webcomp=$$$appTextarea(divId_"Matrx"_name3," rows=5 cols=42 ",val)
 			}
 			set row=row+1
+			if type="cls"||(type="gbl")||(type="mac") {
+				s click="WinOpen('"_$zu(5)_"','"_..%ClassName(1)_"','ResourceWinOpen','~type="_type_"~name="_name3_"~zpmname="_zpmname_"','','"_##class(apptools.core.Action).WriteWinOpenREST(%request)_"');"
+				set name3="<a href=""#"" onclick="""_click_""">"_name3_"</a>"
+			}
 			do ##class(apptools.core.sys).SetTableRow(gn,row,name3,webcomp,type,$lg(data,1),$lg(data,2))
 		}
 	}
@@ -370,6 +375,48 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 
 	write "</form>"
 	quit $$$OK
+}
+
+/// Draw Resource in modal window
+ClassMethod ResourceWinOpen(Par = "")
+{
+	;zw Par q 1
+	set type=$g(Par("type"))
+	set name=$p($g(Par("name")),".",1,*-1)
+	set gn="^||tempRes"
+	if type="cls" {
+		;do ##class(apptools.core.LogInfoPane).GetClassDef(name,,.cls)
+		;write "<pre>"
+		;zw cls
+		;;set i="" for { set i=$o(cls(i)) quit:i=""
+		;	;write !,cls(i) 
+		;;}
+		;write "</pre>"
+		set url="/csp/documatic/%25CSP.Documatic.cls?LIBRARY="_$namespace_"&CLASSNAME="_name
+		&html<
+		<form id="#("ModalMainForm")#">
+		<div class="uk-grid">
+		    <iframe id="#("ModalMainIFrame")#" width="1500" height="1000" style='overflow: auto;' src='#(url)#' ></iframe>
+		    </div>
+		</div>
+		</form>
+		>
+	}
+	elseif type="mac" {
+		write "<pre>"
+		merge r=^rMAC(name,0)
+		for i=1:1 { quit:'$DATA(r(i),str)
+			write !,str 
+		}
+		 write "</pre>"
+	}
+	elseif type="gbl" {
+		set name="^"_name
+		set st=##class(apptools.core.LogInfoPane).DrawArray(name,100000,$zu(5),1," "_name)
+	}
+	;set st=##class(App.sys).SaveSQL(sql,gn)
+	;i 'st w $$$appError($System.Status.GetErrorText(st)) q
+	;write "Трансляция дат <pre>" write ..ReplaceHorolog($lg(@gn@(1))) write "</pre>"
 }
 
 ClassMethod GetResourcesFromZpm(zpmname, ByRef Module, ByRef Res) As %Status
@@ -418,7 +465,7 @@ ClassMethod GetResourcesFromZpm(zpmname, ByRef Module, ByRef Res) As %Status
 }
 
 /// Get ZPM Modules from Repo
-/// d ##class(apptools.lte.resources).GetZPMRepo(.List)
+/// do ##class(apptools.lte.resources).GetZPMRepo(.List)
 ClassMethod GetZPMRepo(List, FindMask = "") As %Status
 {
 	
@@ -436,6 +483,31 @@ ClassMethod GetZPMRepo(List, FindMask = "") As %Status
 		$$$ThrowOnError(tSC)
 		Set List(tRes.%Get("Name"))=$Listbuild(tRes.%Get("Version"),tRes.%Get("Description"),tRes.%Get("Repository"))
 	}
+	quit $$$OK
+}
+
+/// Get modules in Namespaces current instance
+/// do ##class(apptools.lte.resources).GetZpmNamespaces(.List)
+ClassMethod GetZpmNamespaces(ByRef out, text = "")
+{
+	new $Namespace
+	Set currentns=$Namespace
+	Do ##class(%ZPM.PackageManager).GetListNamespace(.namespace)
+	Set ns=""
+	For { set ns=$Order(namespace(ns)) Quit:ns=""
+		Set $Namespace=ns
+		Kill list
+		Do ##class(%ZPM.PackageManager).GetListModules("",.list)
+		;w !,ns zw list
+		If $D(list) {
+			Set module=""
+			For { set module=$Order(list(module)) Quit:module=""
+				;w !,ns_" - "_module
+				if ("@"_module)[("@"_text) merge out(module,ns,module)=list(module)
+			}
+		}
+	}
+	Set $Namespace=currentns
 	quit $$$OK
 }
 

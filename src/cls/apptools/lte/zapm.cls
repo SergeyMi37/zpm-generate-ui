@@ -160,14 +160,20 @@ ClassMethod NSpaceFirstHead(Par = "") As %Status
 		if pk="apptools-admin",$zconvert($G(^%apptools.Setting("HomeNamespace")),"L")'=$zconvert(ns,"L") continue
 		set data=$G(List(pk,"L")),
 			repo="",
-			disabledpk=""
-		if $G(List(pk,"R"))'="" set repo=$lg($G(List(pk,"R")),3)
+			disabledpk="",
+			urldesc=$lg(data,2)
+		if $G(List(pk,"R"))'="" {
+			set repo=$lg($G(List(pk,"R")),3)
+			set click="WinOpen('"_$zu(5)_"','"_..%ClassName(1)_"','RepoWinOpen','~zpmname="_pk_"~ns="_ns_"','','"_##class(apptools.core.Action).WriteWinOpenREST(%request)_"');"
+			set urldesc="<a href=""#"" onclick="""_click_""">"_$lg(data,2)_"</a>"
+		}
 		set zpmname=pk
 		set editbutton=$$$appButton(divId_"appButtonResult4"_pk,"title='Edit Packet' onclick="""_$replace(onclick,"*","edit&ns="_ns_"&zpmname="_zpmname)_"""",pk)
 		if pk="zpm"||(pk="zapm")||(pk="apptools-admin") set disabledpk="disabled"
 		set deletebutton=$$$appButton(divId_"appButtonResult5"_pk,disabledpk_" title='Uninstall Packet' onclick="""_$replace(onclick,"*","uninstall&ns="_ns_"&zpmname="_zpmname)_"""","Uninstall")
 		set publish=$$$appButton(divId_"appButtonPublish"_pk,disabled_" title='Publish into "_$g(currepo(0))_"' onclick="""_$replace(onclick,"*","publish&ns="_ns_"&zpmname="_zpmname)_"""","Publish")
-		do ##class(apptools.core.sys).SetTableRow(gn,i,editbutton,$lg(data,1),$lg(data,2),deletebutton_" "_publish) ;,$lg(data,2))
+
+		do ##class(apptools.core.sys).SetTableRow(gn,i,editbutton,$lg(data,1),urldesc,deletebutton_" "_publish) ;,$lg(data,2))
 	}
 	set row=i
 	;set disabled="disabled"
@@ -188,6 +194,32 @@ ClassMethod NSpaceFirstHead(Par = "") As %Status
 	}
 	do:$d(@gn@(1)) ##class(apptools.core.LogInfoPane).DrawSQL("result "_gn,10000,"","<br>Installed packets:",,,1)
 	$$$SetHeightContent(divId,0)
+	quit $$$OK
+}
+
+/// Draw Resource in modal window
+ClassMethod RepoWinOpen(Par = "")
+{
+	set zpmname=$g(Par("zpmname"))
+	set ns=$g(Par("ns"))
+	do ##class(%ZAPM.ext.zpm).GetListModule(ns,.List,0)
+	set repo=$g(List(zpmname),"R")
+	if $lv(repo) {
+		set url=$lg(repo,3)
+	}
+	if $g(url)'="" {
+		&html<
+		<form id="#("ModalMainForm")#">
+		<div class="uk-grid">
+		    <iframe id="#("ModalMainIFrame")#" width="1500" height="1000" style='overflow: auto;' src='#(url)#' ></iframe>
+		    </div>
+		</div>
+		</form>
+		>
+	}
+	else {
+		write "222222222"
+	}
 	quit $$$OK
 }
 
@@ -330,6 +362,12 @@ ClassMethod OptionsFirstHead(Par = "") As %Status
 	write $$$appText(divId_"Switch2"," size=80 ",switch2)
 	write $$$appButton(divId_"appButtonSwitch2"," onclick="""_$tr(onclick,"*",4)_"""","Switch to Test")
 
+	set find="*"
+	if $D(@..#GNStore@("FindStr"),data) set find=data
+	write "<br><br><br>Find a project in the current instance<br>"
+	write $$$appText(divId_"FindStr"," size=80 ",find)
+	write $$$appButton(divId_"appButtonFindStr","title='Context by project name' onclick="""_$tr(onclick,"*",5)_"""","Find")
+
 	write "<br><br><br>Viewing and editing global for storing package prototypes:<br>"
 	;write $$$appText(divId_"Switch"," size=80 ",switch)
 	s store=..#GNStore
@@ -352,6 +390,7 @@ ClassMethod OptionsResult(Par = "") As %Status
 	set Reset=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"Reset")
 	set Switch=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"Switch")
 	set Switch2=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"Switch2")
+	set FindStr=##class(apptools.core.Action).GetElemForm(%request,.Par,divId_"FindStr")
 	write ..ButtonAgain(divId,key,"Refresh",,"title='Update the current list of elements' ")
 	set st=$$$OK
 	if mode=1 {
@@ -391,6 +430,26 @@ ClassMethod OptionsResult(Par = "") As %Status
 		write "</pre>"
 		if 'st write $$$appError($System.Status.GetErrorText(st))
 		else  write $$$appMsg("Done")
+	} 
+	elseif mode=5 {
+		set @..#GNStore@("FindStr")=FindStr
+		set FindStr=$tr(FindStr,"*")
+		set onclick="AppRpc('','MainHidden','%SYS:apptools.lte.zapm:ShowTab:&appPar=NS*','/apptoolsrest/post-json');"
+			do ##class(apptools.lte.resources).GetZpmNamespaces(.List,FindStr)
+		set gn2="tmpRepo"
+		do ##class(apptools.core.sys).SetTableHeader(gn2,"Name Packets","Namespaces Version Packets")
+		set module="",i=0
+		for { set module=$o(List(module)) quit:module=""
+			set item="",nspaces=""
+			for { set item=$o(List(module,item)) quit:item=""
+				set ver=$lg($G(List(module,item,module)),1)
+				set butt=$$$appButton(divId_"appButtonNs"_item,"onclick="""_$replace(onclick,"*",$tr(item,"%","-"))_"""",item_" "_ver)
+				set nspaces=nspaces_" "_butt
+			}
+			set i=i+1
+			do ##class(apptools.core.sys).SetTableRow(gn2,i,module,nspaces)
+		}
+		do:$d(@gn2@(1)) ##class(apptools.core.LogInfoPane).DrawSQL("result "_gn2,10000,"","<br>Packets in Namespaces:",,,1)
 	} 
 	write "<br>"
 	quit $$$OK
