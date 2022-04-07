@@ -164,8 +164,9 @@ ClassMethod NSpaceFirstHead(Par = "") As %Status
 			urldesc=$lg(data,2)
 		if $G(List(pk,"R"))'="" {
 			set repo=$lg($G(List(pk,"R")),3)
-			set click="WinOpen('"_$zu(5)_"','"_..%ClassName(1)_"','RepoWinOpen','~zpmname="_pk_"~ns="_ns_"','','"_##class(apptools.core.Action).WriteWinOpenREST(%request)_"');"
-			set urldesc="<a href=""#"" onclick="""_click_""">"_$lg(data,2)_"</a>"
+			set click="WinOpen('"_$zu(5)_"','"_..%ClassName(1)_"','RepoWinOpen','~zpmname="_pk_"~ns="_ns_"~repo="_repo_"','','"_##class(apptools.core.Action).WriteWinOpenREST(%request)_"');"
+			;set urldesc="<a href=""#"" onclick="""_click_""">"_$lg(data,2)_"</a>"
+			set urldesc="<a target=repo"_pk_" href="""_repo_""">"_$lg(data,2)_"</a>"
 		}
 		set zpmname=pk
 		set editbutton=$$$appButton(divId_"appButtonResult4"_pk,"title='Edit Packet' onclick="""_$replace(onclick,"*","edit&ns="_ns_"&zpmname="_zpmname)_"""",pk)
@@ -202,24 +203,16 @@ ClassMethod RepoWinOpen(Par = "")
 {
 	set zpmname=$g(Par("zpmname"))
 	set ns=$g(Par("ns"))
-	do ##class(%ZAPM.ext.zpm).GetListModule(ns,.List,0)
-	set repo=$g(List(zpmname),"R")
-	if $lv(repo) {
-		set url=$lg(repo,3)
-	}
-	if $g(url)'="" {
-		&html<
+	set repo=$g(Par("repo"))
+	w repo q 1
+	&html<
 		<form id="#("ModalMainForm")#">
 		<div class="uk-grid">
-		    <iframe id="#("ModalMainIFrame")#" width="1500" height="1000" style='overflow: auto;' src='#(url)#' ></iframe>
+		    <iframe id="#("ModalMainIFrame")#" width="1500" height="1000" style='overflow: auto;' src='#(repo)#' ></iframe>
 		    </div>
 		</div>
 		</form>
 		>
-	}
-	else {
-		write "222222222"
-	}
 	quit $$$OK
 }
 

@@ -73,8 +73,15 @@ ClassMethod UiMatrixRepo(key, divId, ns, mode, zpmname = "", FindMask = "*") As 
 		set name2=name
 		if name["$" set name2=$replace(name,"$","---")
 		set checkbox=##class(apptools.core.Form).WebCompShowCheckbox(,,,divId_"Matr0"_name2,stat)
+		set urldesc=$lg(data,2)
+		if $lg(data,3)'="" {
+			set repo=$lg(data,3)
+			set click="WinOpen('"_$zu(5)_"','apptools.lte.zapm','RepoWinOpen','~zpmname="_name_"~ns="_ns_"~repo="_repo_"','','"_##class(apptools.core.Action).WriteWinOpenREST(%request)_"');"
+			;set urldesc="<a href=""#"" onclick="""_click_""">"_$lg(data,2)_"</a>"
+			set urldesc="<a target=repo"_name2_" href="""_repo_""">"_$lg(data,2)_"</a>"
+		}
 		set row=row+1
-		do ##class(apptools.core.sys).SetTableRow(gn,row,name,checkbox,$lg(data,1),$lg(data,2))
+		do ##class(apptools.core.sys).SetTableRow(gn,row,name,checkbox,$lg(data,1),urldesc)
 	}
 	;if "*"'[FindMask,$l(FindMask)>3 set exec="##class(apptools.core.LogInfo).MarkRed(%AppLogInfoVal,"""_$tr(FindMask,"*")_""")"
 	set st=##class(apptools.core.LogInfoPane).DrawSQL("result "_gn,100000,$zu(5),$g(msg),$g(exec),,1)
