@@ -50,12 +50,15 @@ ClassMethod GetAllApps(opt) As %Status
 		set opt(key,"aw-icon")="fa-solid fa-asterisk" ;"fa-list-alt" ;fa-table"   https://fontawesome.com/icons?d=gallery&p=2&m=free
 		set opt(key,"Active")=1 ;active menu item
 	
-	    if ..IsInstallzpm("fileserver","USER") {
+		do ##class(apptools.lte.resources).GetZpmNamespaces(.List,"fileserver",.firstnamespace)
+	  if $D(List("fileserver")) {
+		set ns=$G(firstnamespace) ;$O(List("fileserver",""))
 		set key="File"
 		set opt(key,"Menu")=sideMenu
-		set opt(key)="Fileserver"
+		set opt(key)="File-server"
+		set opt(key,"Namespace")=ns
 		set opt(key,"id")=key
-		set opt(key,"TabName")="Fileserver"
+		set opt(key,"TabName")="File-server"
 		set opt(key,"ClassName")=..%ClassName(1)
 		set opt(key,"Role")="%All"
 		;set opt(key,"MethodUrlNewWin")="/fileserver/files"

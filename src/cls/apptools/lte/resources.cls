@@ -151,7 +151,11 @@ ClassMethod UiSaveResources(Par = "") As %Status
 		write "<pre>"
 		set st=##class(%ZPM.PackageManager).Shell(cmd)
 		write "</pre>"
-		;do ##class(Fileserver.File).AddFile(WorkDirPacket)
+		set filetgz=WorkDirPacket_".tgz"
+		if ##class(%File).Exists(filetgz) {
+			do ##class(apptools.lte.resources).GetZpmNamespaces(.a,"fileserver",.firstnamespace)
+			if $g(firstnamespace)'="" zn firstnamespace	do ##class(Fileserver.File).AddFile(filetgz)
+		}
 	}
 	write ##class(apptools.lte.zapm).ButtonAgain(divId,key,"Refresh","NSpace")	
 	Quit $$$OK
@@ -495,7 +499,7 @@ ClassMethod GetZPMRepo(List, FindMask = "") As %Status
 
 /// Get modules in Namespaces current instance
 /// do ##class(apptools.lte.resources).GetZpmNamespaces(.List)
-ClassMethod GetZpmNamespaces(ByRef out, text = "")
+ClassMethod GetZpmNamespaces(ByRef out, text = "", ByRef nspace)
 {
 	new $Namespace
 	Set currentns=$Namespace
@@ -510,7 +514,7 @@ ClassMethod GetZpmNamespaces(ByRef out, text = "")
 			Set module=""
 			For { set module=$Order(list(module)) Quit:module=""
 				;w !,ns_" - "_module
-				if ("@"_module)[("@"_text) merge out(module,ns,module)=list(module)
+				if ("@"_module)[("@"_text) merge out(module,ns,module)=list(module) if '$d(nspace) set nspace=ns
 			}
 		}
 	}
