@@ -17,7 +17,7 @@
 ## What's new
 Added example [DEMO](https://zpm-ui.demo.community.intersystems.com/apptoolsrest/a/zapm)
 
-Articles added to DC [Article I](https://community.intersystems.com/post/project-zpm-generate-ui-generate-list-load), [Article II](https://community.intersystems.com/post/project-zpm-generate-ui-search-install-repository-uninstall-publish).
+Articles added to DC [Article I](https://community.intersystems.com/post/project-zpm-generate-ui-generate-list-load), [Article II](https://community.intersystems.com/post/project-zpm-generate-ui-search-install-repository-uninstall-publish), [Article III](https://community.intersystems.com/post/project-zpm-generate-ui-znamespace-package-view-edit-article-3)
  
 ## Installation with ZPM
 
