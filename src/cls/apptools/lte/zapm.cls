@@ -1,7 +1,7 @@
 Include apptools.core
 
 /// http://localhost:52773/apptoolsrest/a/info
-Class apptools.lte.zapm Extends apptools.lte.adminTabs [ ClassType = "", DependsOn = apptools.core.msg, ProcedureBlock ]
+Class apptools.lte.zapm Extends (apptools.lte.adminTabs, apptools.lte.compat) [ ClassType = "", DependsOn = apptools.core.msg, ProcedureBlock ]
 {
 
 /// Application title
@@ -256,7 +256,7 @@ ClassMethod NSpaceResult(Par = "") As %Status
 		if ##class(apptools.lte.zapm).PrivateRepo(,.currepo) {
 			set head="Publish package into '"_$G(currepo(0))_"'"
 			write head_"<br><pre>"
-			set st=##class(%ZPM.PackageManager).Shell("publish "_zpmname)
+			set st=$CLASSMETHOD(..GetZpmMainClass(), "Shell", "publish "_zpmname)
 			write "</pre>"
 			if 'st write $$$appError($System.Status.GetErrorText(st))
 			else  write $$$appMsg("Done")
@@ -291,7 +291,7 @@ ClassMethod NSpaceResult(Par = "") As %Status
 	elseif mode="yes" {
 		set head="Uninstall packages '"_zpmname_"' from current namespace '"_ns_"' "
 		write head_"<br><pre>"
-		set st=##class(%ZPM.PackageManager).Shell("uninstall "_zpmname)
+		set st=$CLASSMETHOD(..GetZpmMainClass(), "Shell", "uninstall "_zpmname)
 		write "</pre>"
 		if 'st write $$$appError($System.Status.GetErrorText(st))
 		else  write $$$appMsg("Done")
@@ -454,13 +454,14 @@ ClassMethod OptionsResult(Par = "") As %Status
 /// write ##class(apptools.lte.zapm).PrivateRepo(,.r)
 ClassMethod PrivateRepo(serverClassList = "", ByRef repo) As %Status
 {
-    Set tRes = ##class(%ZPM.PackageManager.Client.ServerDefinition).ListFunc()
+	set tDefinitionClass = ..GetZpmDefinitionClass()
+    Set tRes = $CLASSMETHOD(tDefinitionClass, "ListFunc")
     $$$ThrowSQLIfError(tRes.%SQLCODE,tRes.%Message)
 	Set tDisplayCount = 0
 	set yes=0
 	While tRes.%Next(.tSC) {
 			$$$ThrowOnError(tSC)
-			Set tRepository = ##class(%ZPM.PackageManager.Client.ServerDefinition).ServerDefinitionKeyOpen(tRes.%Get("Name"),,.tSC)
+			Set tRepository = $CLASSMETHOD(%ZPM.PackageManager.Client.ServerDefinition, "ServerDefinitionKeyOpen", tRes.%Get("Name"),,.tSC)
 			$$$ThrowOnError(tSC)
 			If serverClassList = "" || ($ListFind(serverClassList, $Classname(tRepository))) {
 				;Do tRepository.Display()
@@ -482,7 +483,7 @@ ClassMethod init(installall = 0) As %Status
  new $namespace
  set $namespace="%SYS"
 	if '..IsInstallzpm("zapm") {
-		do ##class(%ZPM.PackageManager).Shell("install zapm")
+		do $CLASSMETHOD(..GetZpmMainClass(), "Shell", "install zapm")
 	}
  set $namespace=curna
  write !,"Load for demo "_##class(apptools.core.net).GetURI(.prop)_"/apptoolsrest/a/zapm"
@@ -505,13 +506,13 @@ ClassMethod init(installall = 0) As %Status
 			 for i="zpm-registry","zpmshow" {
 			 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
 			 }
-		    do:'..IsInstallzpm("fileserver") ##class(%ZPM.PackageManager).Shell("load https://github.com/SergeyMi37/Cache-FileServer")
+		    do:'..IsInstallzpm("fileserver") $CLASSMETHOD(..GetZpmMainClass(), "Shell", "load https://github.com/SergeyMi37/Cache-FileServer")
 		 }
 		 else {  ;install zpm modules for Docker -------------------------------
 			 for i="zpm-registry","zpmshow" {
 			 	set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
 			 }
-		    do:'..IsInstallzpm("fileserver") ##class(%ZPM.PackageManager).Shell("load https://github.com/SergeyMi37/Cache-FileServer")
+		    do:'..IsInstallzpm("fileserver") $CLASSMETHOD(..GetZpmMainClass(), "Shell", "load https://github.com/SergeyMi37/Cache-FileServer")
 		 }
 		}
 		else {  //just linux without docker
@@ -540,7 +541,7 @@ ClassMethod init(installall = 0) As %Status
 /// write ##class(appmsw.python.util).IsInstallzpm("exchange-rate-cbrf")
 ClassMethod IsInstallzpm(modulename, ns = {$namespace}) As %String
 {
-	do ##class(%ZPM.PackageManager).GetListModule(ns,.list)
+	do $CLASSMETHOD(..GetZpmMainClass(), "GetListModule", ns,.list)
 	;zw list
 	quit $DATA(list(modulename))
 }
