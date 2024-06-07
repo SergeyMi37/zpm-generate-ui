@@ -23,6 +23,7 @@
     <Invokes>
      <Invoke Class="apptools.lte.zapm" Method="init"></Invoke>
     </Invokes>
+	<Resource Name="apptools.lte.compat.CLS"/>
 	<Resource Name="apptools.lte.zapm.CLS"/>
 	<Resource Name="apptools.lte.resources.CLS"/>
     </Module>

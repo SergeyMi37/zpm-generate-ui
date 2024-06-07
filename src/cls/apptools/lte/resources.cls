@@ -1,7 +1,7 @@
 Include apptools.core
 
 /// Resources utilities for ZPM
-Class apptools.lte.resources [ Abstract, DependsOn = apptools.core.msg ]
+Class apptools.lte.resources extends apptools.lte.compat [ Abstract, DependsOn = apptools.core.msg ]
 {
 
 /// Default name new packet
@@ -37,7 +37,7 @@ ClassMethod UiSaveRepo(Par = "") As %Status
 			set st=##class(%ZAPM.ext.zapp).prompt("newdb "_i)
 		}
 		elseif mode="install" {
-			set st=##class(%ZPM.PackageManager).Shell("install "_i)
+			set st=$CLASSMETHOD(..GetZpmMainClass(), "Shell", "install "_i)
 		}
 		write "</pre>"
 		if 'st write $$$appError($System.Status.GetErrorText(st))
@@ -142,14 +142,14 @@ ClassMethod UiSaveResources(Par = "") As %Status
 	}
 	if mode="load" { //LOAD
 		write "<pre>"
-		set st=##class(%ZPM.PackageManager).Shell("load "_WorkDirPacket)
+		set st=$CLASSMETHOD(..GetZpmMainClass(), "Shell", "load "_WorkDirPacket)
 		write "</pre>"
 	}
 	elseif mode="package" { //PACKAGE
 		set cmd="package -p "_WorkDirPacket_" "_namezpm
 		write cmd
 		write "<pre>"
-		set st=##class(%ZPM.PackageManager).Shell(cmd)
+		set st=$CLASSMETHOD(..GetZpmMainClass(), "Shell", cmd)
 		write "</pre>"
 		set filetgz=WorkDirPacket_".tgz"
 		if ##class(%File).Exists(filetgz) {
@@ -310,7 +310,7 @@ ClassMethod UiMatrixResources(key, divId, ns, mode, zpmname, GN, blockui = 1) As
 	;-----------------
 	set gnpro=$na(@GN@("prototype",ns))
 	write $$$appInputHidden(divId_"ModeSet","",mode)
-	If mode="edit",##class(%ZPM.PackageManager.Developer.Module).NameExists(zpmname) { ;-------------------
+	If mode="edit",$CLASSMETHOD(..GetZpmModuleClass(), "NameExists", zpmname) { ;-------------------
 		if '..GetResourcesFromZpm(zpmname,.Module,.Res) quit $$$OK
 		do ##class(%ZAPM.ext.zpm).GetListModule(ns,.List,0)
 		set dirroot=$lg($G(List(zpmname,"L")),3)
@@ -432,7 +432,7 @@ ClassMethod ResourceWinOpen(Par = "")
 
 ClassMethod GetResourcesFromZpm(zpmname, ByRef Module, ByRef Res) As %Status
 {
-	Set Module = ##class(%ZPM.PackageManager.Developer.Module).NameOpen(zpmname,,.tSC)
+	Set Module = $CLASSMETHOD(..GetZpmModuleClass(), "NameOpen", zpmname, , .tSC)
 	If $$$ISERR(tSC) {	Quit tSC }
 	set lo=Module.CalculatedResourcesGet()
 	set debug=0 ;
@@ -482,8 +482,13 @@ ClassMethod GetZPMRepo(List, FindMask = "") As %Status
 	
 	do ##class(%ZAPM.ext.zpm).GetVerZpm(.IsHspm,.RepoFieldName)	
 	set where="(1=1)"
+	If $EXTRACT(..GetZpmMainClass(), 1, 4) = "%IPM" {
+		set tCall = "%IPM_Utils.Module_GetModuleList"
+	} Else {
+		set tCall = "%ZPM_PackageManager_Developer.Utils_GetModuleList"
+	}
 	if "*"'[FindMask set where="name like '"_$replace(FindMask,"*","%")_"'" 
-	Set tQuery = "select Name, Version, "_RepoFieldName_", Description from %ZPM_PackageManager_Developer.Utils_GetModuleList('registry') WHERE "_where
+	Set tQuery = "select Name, Version, "_RepoFieldName_", Description from "_tCall_"('registry') WHERE "_where
 	;w !,tQuery
 	Set tRes = ##class(%SQL.Statement).%ExecDirect(,tQuery)
 	
@@ -503,12 +508,12 @@ ClassMethod GetZpmNamespaces(ByRef out, text = "", ByRef nspace)
 {
 	new $Namespace
 	Set currentns=$Namespace
-	Do ##class(%ZPM.PackageManager).GetListNamespace(.namespace)
+	Do $CLASSMETHOD(..GetZpmMainClass(), "GetListNamespace", .namespace)
 	Set ns=""
 	For { set ns=$Order(namespace(ns)) Quit:ns=""
 		Set $Namespace=ns
 		Kill list
-		Do ##class(%ZPM.PackageManager).GetListModules("",.list)
+		Do $CLASSMETHOD(..GetZpmMainClass(), "GetListModules", "", .list)
 		;w !,ns zw list
 		If $D(list) {
 			Set module=""
